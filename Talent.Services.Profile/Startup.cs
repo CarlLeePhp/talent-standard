@@ -42,7 +42,8 @@ namespace Talent.Services.Profile
             {
                 options.AddPolicy("AllowWebAppAccess", builder =>
                 {
-                    builder.AllowAnyOrigin()
+                    builder
+                    .AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();
