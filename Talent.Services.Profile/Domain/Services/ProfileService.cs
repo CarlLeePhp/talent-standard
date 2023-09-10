@@ -111,7 +111,80 @@ namespace Talent.Services.Profile.Domain.Services
 
         public async Task<bool> UpdateTalentProfile(TalentProfileViewModel model, string updaterId)
         {
-            //Your code here;
+            try
+            {
+                if (model.Id != null)
+                {
+                    User existingUser = (await _userRepository.GetByIdAsync(model.Id));
+                    existingUser.FirstName = model.FirstName;
+                    existingUser.MiddleName = model.MiddleName;
+                    existingUser.LastName = model.LastName;
+                    existingUser.Gender = model.Gender;
+                    existingUser.Email = model.Email;
+                    existingUser.Phone = model.Phone;
+                    existingUser.MobilePhone = model.MobilePhone;
+                    existingUser.IsMobilePhoneVerified = model.IsMobilePhoneVerified;
+
+                    existingUser.Address = model.Address;
+                    existingUser.Nationality = model.Nationality;
+                    existingUser.VisaStatus = model.VisaStatus;
+                    existingUser.VisaExpiryDate = model.VisaExpiryDate;
+
+                    existingUser.ProfilePhoto = model.ProfilePhoto;
+                    existingUser.ProfilePhotoUrl = model.ProfilePhotoUrl;
+                    existingUser.Summary = model.Summary;
+                    existingUser.Description = model.Description;
+
+                    existingUser.LinkedAccounts = model.LinkedAccounts;
+                    existingUser.JobSeekingStatus = model.JobSeekingStatus;
+
+                    existingUser.UpdatedBy = updaterId;
+                    existingUser.UpdatedOn = DateTime.Now;
+
+                    var newSkills = new List<UserSkill>();
+                    foreach (var item in model.Skills)
+                    {
+                        var skill = existingUser.Skills.SingleOrDefault(x => x.Id == item.Id);
+                        if (skill == null)
+                        {
+                            skill = new UserSkill
+                            {
+                                Id = ObjectId.GenerateNewId().ToString(),
+                                IsDeleted = false
+                            };
+                        }
+                        UpdateSkillFromView(item, skill);
+                        newSkills.Add(skill);
+                    }
+                    existingUser.Skills = newSkills;
+
+                    var newLanguages = new List<UserLanguage>();
+                    foreach (var item in model.Languages)
+                    {
+                        var language = existingUser.Languages.SingleOrDefault(x => x.Id == item.Id);
+                        if (language == null)
+                        {
+                            language = new UserLanguage
+                            {
+                                Id = ObjectId.GenerateNewId().ToString(),
+                                IsDeleted = false
+                            };
+                        }
+                        UpdateLanguageFromView(item, language);
+                        newLanguages.Add(language);
+                    }
+                    existingUser.Languages = newLanguages;
+
+                    await _userRepository.Update(existingUser);
+
+                    return true;
+                }
+                return false;
+            }
+            catch (MongoException e)
+            {
+                return false;
+            }
             throw new NotImplementedException();
         }
 
@@ -371,6 +444,13 @@ namespace Talent.Services.Profile.Domain.Services
         {
             original.ExperienceLevel = model.Level;
             original.Skill = model.Name;
+        }
+
+        protected void UpdateLanguageFromView(AddLanguageViewModel model, UserLanguage original)
+        {
+            original.UserId = model.CurrentUserId;
+            original.Language = model.Name;
+            original.LanguageLevel = model.Level;
         }
 
         #endregion
