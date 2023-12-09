@@ -1,22 +1,90 @@
 ﻿/* Social media JSX */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ChildSingleInput } from "../Form/SingleInput.jsx";
 import { Popup, Button, Icon } from "semantic-ui-react";
 
+// function SocialMediaLinkedAccount(props) {
+//     const [showEditSection, setShowEditSection] = useState(false);
+//     const [newLinkedAccounts, setNewLinkedAccounts] = useState()
+
+//     console.log(typeof props.linkedAccounts);
+
+//     const openEdit = () => {
+//         setShowEditSection(true);
+//     };
+
+//     const closeEdit = () => {
+//         setShowEditSection(false);
+//     };
+//     const handleChange = (event) => {
+//         const data = Object.assign({}, newLinkedAccounts);
+//         data[event.target.name] = event.target.value;
+//         props.updateLinkedAccounts(data);
+//     };
+
+//     const saveLinkedAccounts = () => {
+//         console.log(newLinkedAccounts);
+//         const data = Object.assign({}, { linkedAccounts: newLinkedAccounts });
+//         props.saveProfileData(data);
+//         closeEdit();
+//     };
+
+//     const renderEdit = (
+//         <div className="ui sixteen wide column">
+//             <ChildSingleInput
+//                 inputType="text"
+//                 label="LinkedIn"
+//                 name="linkedIn"
+//                 value={props.linkedAccounts.linkedIn}
+//                 controlFunc={handleChange}
+//                 maxLength={80}
+//                 placeholder="Enter your LinkedIn Url"
+//                 errorMessage="Please enter a valid LinkedIn Url"
+//             />
+//             <ChildSingleInput
+//                 inputType="text"
+//                 label="GitHub"
+//                 name="github"
+//                 value={props.linkedAccounts.github}
+//                 controlFunc={handleChange}
+//                 maxLength={80}
+//                 placeholder="Enter your GitHub Url"
+//                 errorMessage="Please enter a valid GitHub Url"
+//             />
+//             <button type="button" className="ui teal button" onClick={saveLinkedAccounts}>
+//                 Save
+//             </button>
+//             <button type="button" className="ui button" onClick={closeEdit}>
+//                 Cancel
+//             </button>
+//         </div>
+//     );
+
+//     const renderDisplay = (
+//         <div className="row" style={{ paddingLeft: "1em", paddingRight: "1em" }}>
+//             <Button primary>
+//                 <Icon name="linkedin" /> LinkedIn
+//             </Button>
+//             <Button secondary>
+//                 <Icon name="github" /> GitHub
+//             </Button>
+//             <Button secondary onClick={openEdit} style={{ marginLeft: "auto" }}>
+//                 Edit
+//             </Button>
+//         </div>
+//     );
+
+//     return showEditSection ? renderEdit : renderDisplay;
+// }
+
+// export default SocialMediaLinkedAccount;
 export default class SocialMediaLinkedAccount extends React.Component {
     constructor(props) {
         super(props);
 
-        const existLinkedAccounts = props.linkedAccounts ?
-            Object.assign({}, props.linkedAccounts)
-            : {
-                  linkedIn: "",
-                  github: "",
-              };
-
         this.state = {
             showEditSection: false,
-            newLinkedAccounts: existLinkedAccounts,
+            newLinkedAccounts: { linkedIn: "you did not get it", github: "you did not get it" },
         };
 
         this.openEdit = this.openEdit.bind(this);
@@ -27,11 +95,11 @@ export default class SocialMediaLinkedAccount extends React.Component {
         this.renderDisplay = this.renderDisplay.bind(this);
     }
 
-    componentDidMount() {
-        //$(".ui.button.social-media").popup();
-        console.log(this.props.linkedAccounts);
+    componentWillReceiveProps(props) {
+        if (props.linkedAccounts) {
+            this.setState({ newLinkedAccounts: props.linkedAccounts });
+        }
     }
-
     openEdit() {
         this.setState({
             showEditSection: true,
@@ -99,10 +167,10 @@ export default class SocialMediaLinkedAccount extends React.Component {
     renderDisplay() {
         return (
             <div className="row" style={{ paddingLeft: "1em", paddingRight: "1em" }}>
-                <Button primary>
+                <Button href={this.state.newLinkedAccounts.linkedIn} target="_blank" primary>
                     <Icon name="linkedin" /> LinkedIn
                 </Button>
-                <Button secondary>
+                <Button href={this.state.newLinkedAccounts.github} target="_blank" secondary>
                     <Icon name="github" /> GitHub
                 </Button>
                 <Button secondary onClick={this.openEdit} style={{ marginLeft: "auto" }}>

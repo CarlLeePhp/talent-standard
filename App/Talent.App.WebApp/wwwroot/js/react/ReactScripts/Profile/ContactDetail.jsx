@@ -6,15 +6,14 @@ export class IndividualDetailSection extends Component {
     constructor(props) {
         super(props);
 
-        const details = props.details ?
-            Object.assign({}, props.details)
+        const details = props.details
+            ? Object.assign({}, props.details)
             : {
                   firstName: "",
                   lastName: "",
                   email: "",
                   phone: "",
               };
-
         this.state = {
             showEditSection: false,
             newContact: details,
