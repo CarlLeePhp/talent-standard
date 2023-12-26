@@ -1,7 +1,7 @@
 ﻿import React from "react";
 import Cookies from "js-cookie";
-import { default as Countries } from "../../../../util/jsonFiles/countries.json";
 import { ChildSingleInput } from "../Form/SingleInput.jsx";
+import { Select } from "../Form/Select.jsx";
 
 export class Address extends React.Component {
     constructor(props) {
@@ -10,6 +10,9 @@ export class Address extends React.Component {
         this.state = {
             showEditSection: false,
             newAddress: { number: "", street: "", suburb: "", postCode: 0, city: "", country: "" },
+            countries: {},
+            countryOptions: [],
+            cities: [],
         };
 
         this.openEdit = this.openEdit.bind(this);
@@ -21,9 +24,33 @@ export class Address extends React.Component {
     }
 
     componentWillReceiveProps(props) {
+        console.log(this.state.countries);
         if (props.addressData) {
-            this.setState({ newAddress: props.addressData });
+            if (props.addressData.country !== "") {
+                let options = [];
+                this.state.countries[props.addressData.country].forEach((city) => {
+                    options.push({ value: city, title: city });
+                });
+                this.setState({ newAddress: props.addressData, cities: options });
+            } else {
+                this.setState({ newAddress: props.addressData });
+            }
         }
+    }
+
+    componentDidMount() {
+        // read the Json file
+
+        fetch("/util/jsonFiles/countries.json")
+            .then((response) => response.json())
+            .then((json) => {
+                let options = [];
+                let optionKeys = Object.keys(json);
+                optionKeys.forEach((c) => {
+                    options.push({ value: c, title: c });
+                });
+                this.setState({ countries: json, countryOptions: options });
+            });
     }
 
     openEdit() {
@@ -41,9 +68,20 @@ export class Address extends React.Component {
     handleChange(event) {
         const data = Object.assign({}, this.state.newAddress);
         data[event.target.name] = event.target.value;
-        this.setState({
-            newAddress: data,
-        });
+        let options = [];
+        if (event.target.name === "country") {
+            this.state.countries[event.target.value].forEach((city) => {
+                options.push({ value: city, title: city });
+            });
+            this.setState({
+                newAddress: data,
+                cities: options,
+            });
+        } else {
+            this.setState({
+                newAddress: data,
+            });
+        }
     }
 
     saveAddress() {
@@ -74,7 +112,7 @@ export class Address extends React.Component {
                     inputType="text"
                     label="Street"
                     name="street"
-                    value={this.state.newAddress.steret}
+                    value={this.state.newAddress.street}
                     controlFunc={this.handleChange}
                     maxLength={80}
                     placeholder="Enter your street name"
@@ -100,26 +138,14 @@ export class Address extends React.Component {
                     placeholder="Enter your post code"
                     errorMessage="Please enter a valid post code"
                 />
-                <ChildSingleInput
-                    inputType="text"
-                    label="City"
-                    name="city"
-                    value={this.state.newAddress.city}
-                    controlFunc={this.handleChange}
-                    maxLength={80}
-                    placeholder="Enter your city"
-                    errorMessage="Please enter a valid city"
-                />
-                <ChildSingleInput
-                    inputType="text"
-                    label="Country"
-                    name="country"
-                    value={this.state.newAddress.country}
-                    controlFunc={this.handleChange}
-                    maxLength={80}
-                    placeholder="Enter your country"
-                    errorMessage="Please enter a valid country"
-                />
+                <div className="field">
+                    <label>Country</label>
+                    <Select name="country" selectedOption={this.state.newAddress.country} placeholder="Select your country" options={this.state.countryOptions} controlFunc={this.handleChange} />
+                </div>
+                <div className="field">
+                    <label>City</label>
+                    <Select name="city" selectedOption={this.state.newAddress.city} placeholder="Select your city" options={this.state.cities} controlFunc={this.handleChange} />
+                </div>
                 <button type="button" className="ui teal button" onClick={this.saveAddress}>
                     Save
                 </button>
@@ -133,7 +159,7 @@ export class Address extends React.Component {
     renderDisplay() {
         let fullStreet = this.props.addressData ? `${this.props.addressData.number}, ${this.props.addressData.street}, ${this.props.addressData.suburb}, ${this.props.addressData.postCode}` : "";
         let city = this.props.addressData ? this.props.addressData.city : "";
-        let country = this.props.addressData ? this.props.addressData.city : "";
+        let country = this.props.addressData ? this.props.addressData.country : "";
 
         return (
             <div className="row">
