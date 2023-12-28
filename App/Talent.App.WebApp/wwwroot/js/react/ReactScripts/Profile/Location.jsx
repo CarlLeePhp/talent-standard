@@ -24,7 +24,6 @@ export class Address extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        console.log(this.state.countries);
         if (props.addressData) {
             if (props.addressData.country !== "") {
                 let options = [];
@@ -85,7 +84,6 @@ export class Address extends React.Component {
     }
 
     saveAddress() {
-        console.log(this.state.newAddress);
         const data = Object.assign({}, { address: this.state.newAddress });
         this.props.saveProfileData(data);
         this.closeEdit();

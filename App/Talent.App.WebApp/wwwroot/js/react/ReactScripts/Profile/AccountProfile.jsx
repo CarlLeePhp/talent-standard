@@ -160,6 +160,15 @@ export default class AccountProfile extends React.Component {
                                         <FormItemWrapper title="Address" tooltip="Enter your current address">
                                             <Address addressData={this.state.profileData.address} updateProfileData={this.updateWithoutSave} saveProfileData={this.updateAndSaveData} />
                                         </FormItemWrapper>
+
+                                        <FormItemWrapper title="Visa Status" tooltip="What is your current Visa/Citizenship status?">
+                                            <VisaStatus
+                                                visaStatus={this.state.profileData.visaStatus}
+                                                visaExpiryDate={this.state.profileData.visaExpiryDate}
+                                                updateProfileData={this.updateWithoutSave}
+                                                saveProfileData={this.updateAndSaveData}
+                                            />
+                                        </FormItemWrapper>
                                     </div>
                                 </form>
                             </div>
