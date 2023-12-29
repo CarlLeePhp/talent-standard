@@ -179,7 +179,44 @@ export class Address extends React.Component {
 export class Nationality extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            nationality: "",
+            nationalities: [],
+        };
+
+        this.handleChange = this.handleChange.bind(this);
     }
 
-    render() {}
+    componentDidMount() {
+        fetch("/util/jsonFiles/nationality.json")
+            .then((response) => response.json())
+            .then((json) => {
+                let options = [];
+                json.forEach((n) => {
+                    options.push({ value: n, title: n });
+                });
+                this.setState({ nationalities: options });
+            });
+    }
+
+    componentWillReceiveProps(props) {
+        if (props.nationalityData !== "") this.setState({ nationality: props.nationalityData });
+    }
+
+    handleChange(event) {
+        const data = Object.assign({}, { nationality: event.target.value });
+        this.props.saveProfileData(data);
+        this.setState({ nationality: event.target.value });
+    }
+
+    render() {
+        return (
+            <div className="ui sixteen wide column">
+                <div className="field six wide">
+                    <Select name="country" selectedOption={this.state.nationality} placeholder="Select your nationality" options={this.state.nationalities} controlFunc={this.handleChange} />
+                </div>
+            </div>
+        );
+    }
 }

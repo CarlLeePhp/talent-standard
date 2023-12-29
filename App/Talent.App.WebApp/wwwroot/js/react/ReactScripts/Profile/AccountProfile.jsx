@@ -42,6 +42,8 @@ export default class AccountProfile extends React.Component {
                     status: "",
                     availableDate: null,
                 },
+                summary: "",
+                description: "",
             },
             loaderData: loaderData,
         };
@@ -160,6 +162,9 @@ export default class AccountProfile extends React.Component {
                                         <FormItemWrapper title="Address" tooltip="Enter your current address">
                                             <Address addressData={this.state.profileData.address} updateProfileData={this.updateWithoutSave} saveProfileData={this.updateAndSaveData} />
                                         </FormItemWrapper>
+                                        <FormItemWrapper title="Nationality" tooltip="Select your nationality">
+                                            <Nationality nationalityData={this.state.profileData.nationality} saveProfileData={this.updateAndSaveData} />
+                                        </FormItemWrapper>
 
                                         <FormItemWrapper title="Visa Status" tooltip="What is your current Visa/Citizenship status?">
                                             <VisaStatus
@@ -167,6 +172,14 @@ export default class AccountProfile extends React.Component {
                                                 visaExpiryDate={this.state.profileData.visaExpiryDate}
                                                 updateProfileData={this.updateWithoutSave}
                                                 saveProfileData={this.updateAndSaveData}
+                                            />
+                                        </FormItemWrapper>
+                                        <FormItemWrapper title="Description" tooltip="">
+                                            <SelfIntroduction
+                                                summary={this.state.profileData.summary}
+                                                description={this.state.profileData.description}
+                                                updateProfileData={this.updateAndSaveData}
+                                                updateWithoutSave={this.updateWithoutSave}
                                             />
                                         </FormItemWrapper>
                                     </div>
