@@ -17,6 +17,7 @@ import Experience from "./Experience.jsx";
 import { BodyWrapper, loaderData } from "../Layout/BodyWrapper.jsx";
 import { LoggedInNavigation } from "../Layout/LoggedInNavigation.jsx";
 import TalentStatus from "./TalentStatus.jsx";
+import { PROFILE_BASE_URL } from "../baseUrls.js";
 
 export default class AccountProfile extends React.Component {
     constructor(props) {
@@ -70,7 +71,7 @@ export default class AccountProfile extends React.Component {
     loadData() {
         var cookies = Cookies.get("talentAuthToken");
         $.ajax({
-            url: "http://localhost:60290/profile/profile/getTalentProfile",
+            url: PROFILE_BASE_URL + "profile/profile/getTalentProfile",
             headers: {
                 Authorization: "Bearer " + cookies,
                 "Content-Type": "application/json",
@@ -110,7 +111,7 @@ export default class AccountProfile extends React.Component {
     saveProfile() {
         var cookies = Cookies.get("talentAuthToken");
         $.ajax({
-            url: "http://localhost:60290/profile/profile/updateTalentProfile",
+            url: PROFILE_BASE_URL + "profile/profile/updateTalentProfile",
             headers: {
                 Authorization: "Bearer " + cookies,
                 "Content-Type": "application/json",
@@ -166,7 +167,7 @@ export default class AccountProfile extends React.Component {
                                             <Nationality nationalityData={this.state.profileData.nationality} saveProfileData={this.updateAndSaveData} />
                                         </FormItemWrapper>
                                         <FormItemWrapper title="Languages" tooltip="Select languages that you speak">
-                                            <Language languageData={this.state.profileData.languages} updateProfileData={this.updateAndSaveData} />
+                                            <Language languageData={this.state.profileData.languages} updateProfileData={this.updateAndSaveData} updateWithoutSave={this.updateWithoutSave} />
                                         </FormItemWrapper>
 
                                         <FormItemWrapper title="Visa Status" tooltip="What is your current Visa/Citizenship status?">

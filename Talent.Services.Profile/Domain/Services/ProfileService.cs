@@ -43,18 +43,38 @@ namespace Talent.Services.Profile.Domain.Services
             _fileService = fileService;
         }
 
-        public bool AddNewLanguage(AddLanguageViewModel language)
+        public async Task<bool> AddNewLanguage(AddLanguageViewModel language)
         {
             //Your code here;
+            try
+            {
+                var userLanguage = new UserLanguage
+                {
+                    // get user ID
+                    UserId = _userAppContext.CurrentUserId,
+                    Id = ObjectId.GenerateNewId().ToString(),
+                    IsDeleted = false,
+                    Language = language.Name,
+                    LanguageLevel = language.Level,
+                };
+
+                await _userLanguageRepository.Add(userLanguage);
+                return true;
+            }
+            catch (MongoException e)
+            {
+                return false;
+            }
+                        
             throw new NotImplementedException();
         }
 
         public async Task<TalentProfileViewModel> GetTalentProfile(string Id)
         {
             User profile = null;
-            
+
             profile = await _userRepository.GetByIdAsync(Id);
-            
+
             var videoUrl = "";
 
             if (profile != null)
@@ -531,7 +551,7 @@ namespace Talent.Services.Profile.Domain.Services
             //Your code here;
             throw new NotImplementedException();
         }
-         
+
         public async Task<int> GetTotalTalentsForClient(string clientId, string recruiterId)
         {
             //Your code here;
