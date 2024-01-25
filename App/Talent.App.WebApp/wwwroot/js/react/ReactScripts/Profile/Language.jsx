@@ -12,7 +12,7 @@ export default class Language extends React.Component {
 
         this.state = {
             showNewSection: false,
-            showEditSection: true,
+            showEditSection: false,
             languageData: [], // name, level, id, currentUserId
             newLanguage: "",
             newLevel: "",
@@ -26,6 +26,7 @@ export default class Language extends React.Component {
         this.closeEdit = this.closeEdit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.addLanguage = this.addLanguage.bind(this);
+        this.updateLanguage = this.updateLanguage.bind(this);
     }
 
     componentWillReceiveProps(props) {
@@ -44,9 +45,11 @@ export default class Language extends React.Component {
         });
     }
 
-    openEdit() {
+    openEdit(index) {
         this.setState({
             showEditSection: true,
+            selectedLanguage: this.state.languageData[index].name,
+            selectedLevel: this.state.languageData[index].level
         });
     }
 
@@ -65,36 +68,36 @@ export default class Language extends React.Component {
     addLanguage() {
         console.log("you are going to add a language");
         if (this.state.newLanguage === "" || this.state.newLevel === "") {
-            console.log("Something is empty");
+            console.log("Language and Level cannot be empty");
             return;
         }
         // add the language to database
         var cookies = Cookies.get("talentAuthToken");
-        $.ajax({
-            url: PROFILE_BASE_URL + "profile/profile/addLanguage",
-            headers: {
-                Authorization: "Bearer " + cookies,
-                "Content-Type": "application/json",
-            },
-            type: "POST",
-            data: JSON.stringify({
-                name: this.state.newLanguage,
-                level: this.state.newLevel,
-            }),
-            success: function (res) {
-                console.log(res);
-                if (res.success == true) {
-                    TalentUtil.notification.show("Language added sucessfully", "success", null, null);
-                } else {
-                    TalentUtil.notification.show("Language did not add successfully", "error", null, null);
-                }
-            }.bind(this),
-            error: function (res, a, b) {
-                console.log(res);
-                console.log(a);
-                console.log(b);
-            },
-        });
+        // $.ajax({
+        //     url: PROFILE_BASE_URL + "profile/profile/addLanguage",
+        //     headers: {
+        //         Authorization: "Bearer " + cookies,
+        //         "Content-Type": "application/json",
+        //     },
+        //     type: "POST",
+        //     data: JSON.stringify({
+        //         name: this.state.newLanguage,
+        //         level: this.state.newLevel,
+        //     }),
+        //     success: function (res) {
+        //         console.log(res);
+        //         if (res.success == true) {
+        //             TalentUtil.notification.show("Language added sucessfully", "success", null, null);
+        //         } else {
+        //             TalentUtil.notification.show("Language did not add successfully", "error", null, null);
+        //         }
+        //     }.bind(this),
+        //     error: function (res, a, b) {
+        //         console.log(res);
+        //         console.log(a);
+        //         console.log(b);
+        //     },
+        // });
 
         // update state
         let newLanguageData = [];
@@ -102,11 +105,19 @@ export default class Language extends React.Component {
             newLanguageData[i] = this.state.languageData[i];
         }
         newLanguageData.push({ name: this.state.newLanguage, level: this.state.newLevel });
-        // this.setState({ languageData: newLanguageData });
+        this.setState({ languageData: newLanguageData });
 
+        // update profile
+        let data = Object.assign({}, {languages: newLanguageData})
+        this.props.updateProfileData(data);
+        this.closeNew();
         // update parent's state
-        let data = Object.assign({}, { languages: newLanguageData });
-        this.props.updateWithoutSave(data);
+        // let data = Object.assign({}, { languages: newLanguageData });
+        // this.props.updateWithoutSave(data);
+    }
+
+    updateLanguage(){
+        console.log("Your Language was updated")
     }
 
     render() {
@@ -162,40 +173,44 @@ export default class Language extends React.Component {
                     </TableHeader>
 
                     <TableBody>
+                        {this.state.showEditSection && 
                         <TableRow>
                             <TableCell>
                                 <SingleInput
                                     inputType="text"
-                                    name="newLanguage"
-                                    content={this.state.newLanguage}
+                                    name="selectedLanguage"
+                                    content={this.state.selectedLanguage}
                                     controlFunc={this.handleChange}
-                                    placeholder="Add Language"
+                                    placeholder="Select a language"
                                     isError={false}
                                     errorMessage="Please enter a valid language"
                                 />
                             </TableCell>
                             <TableCell>
-                                <Select name="newLevel" selectedOption={this.state.newLevel} placeholder="Language Level" options={levelOptions} controlFunc={this.handleChange} />
+                                <Select name="selectedLevel" selectedOption={this.state.selectedLevel} placeholder="Language Level" options={levelOptions} controlFunc={this.handleChange} />
                             </TableCell>
                             <TableCell>
-                                <Button basic color="blue">
+                                <button type="button" className="ui blue basic button">
                                     Update
-                                </Button>
-                                <Button basic color="red">
+                                </button>
+                                <button type="button" className="ui red basic button" onClick={this.closeEdit}>
                                     Cancel
-                                </Button>
+                                </button>
                             </TableCell>
-                        </TableRow>
-                        {this.state.languageData.map((l) => (
-                            <TableRow key={l.name}>
+                        </TableRow>}
+                        {this.state.languageData.map((l,index) => (
+                            <TableRow key={index}>
                                 <TableCell>{l.name}</TableCell>
                                 <TableCell>{l.level}</TableCell>
                                 <TableCell>
-                                    <Icon name="pencil alternate" onClick={console.log("Edit...")} />
-
-                                    <Button basic>
+                                    <button type="button" className="ui icon button" onClick={() => this.openEdit(index)}>
+                                        <Icon name="pencil alternate" />
+                                    </button>
+                                    <button type="button" className="ui icon button" onClick={this.closeEdit}>
                                         <Icon name="close" />
-                                    </Button>
+                                    </button>
+                                        
+                                    
                                 </TableCell>
                             </TableRow>
                         ))}

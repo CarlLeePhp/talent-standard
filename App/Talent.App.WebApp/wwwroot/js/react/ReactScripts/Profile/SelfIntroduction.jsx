@@ -53,7 +53,7 @@ export default class SelfIntroduction extends React.Component {
                 />
                 <p>Summary must be no more than 150 characters.</p>
 
-                <Form>
+                
                     <TextArea
                         name="description"
                         placeholder="Please tell us about any hobbies, additional expertise, or anything else you'd like to add."
@@ -61,7 +61,7 @@ export default class SelfIntroduction extends React.Component {
                         onChange={this.handleChange}
                         value={this.state.description}
                     />
-                </Form>
+                
                 <p>Description must be between 150-600 characters.</p>
                 <button type="button" className="ui right floated teal button" onClick={this.saveDescription}>
                     Save
