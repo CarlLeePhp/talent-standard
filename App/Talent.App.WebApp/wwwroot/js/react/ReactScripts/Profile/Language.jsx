@@ -2,9 +2,7 @@
 import React from "react";
 import { SingleInput } from "../Form/SingleInput.jsx";
 import { Select } from "../Form/Select.jsx";
-import Cookies from "js-cookie";
-import { TableRow, TableHeaderCell, TableHeader, TableCell, TableBody, Header, Table, Rating, GridRow, GridColumn, Grid, Button, Icon } from "semantic-ui-react";
-import { PROFILE_BASE_URL } from "../baseUrls.js";
+import { TableRow, TableHeaderCell, TableHeader, TableCell, TableBody, Header, Table, Rating, GridRow, GridColumn, Grid, Icon } from "semantic-ui-react";
 
 export default class Language extends React.Component {
     constructor(props) {
@@ -18,6 +16,7 @@ export default class Language extends React.Component {
             newLevel: "",
             selectedLanguage: "",
             selectedLevel: "",
+            selectedIndex: 0,
         };
 
         this.openNew = this.openNew.bind(this);
@@ -27,6 +26,7 @@ export default class Language extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.addLanguage = this.addLanguage.bind(this);
         this.updateLanguage = this.updateLanguage.bind(this);
+        this.removeLanguage = this.removeLanguage.bind(this);
     }
 
     componentWillReceiveProps(props) {
@@ -49,7 +49,8 @@ export default class Language extends React.Component {
         this.setState({
             showEditSection: true,
             selectedLanguage: this.state.languageData[index].name,
-            selectedLevel: this.state.languageData[index].level
+            selectedLevel: this.state.languageData[index].level,
+            selectedIndex: index
         });
     }
 
@@ -72,7 +73,7 @@ export default class Language extends React.Component {
             return;
         }
         // add the language to database
-        var cookies = Cookies.get("talentAuthToken");
+        // var cookies = Cookies.get("talentAuthToken");
         // $.ajax({
         //     url: PROFILE_BASE_URL + "profile/profile/addLanguage",
         //     headers: {
@@ -105,7 +106,11 @@ export default class Language extends React.Component {
             newLanguageData[i] = this.state.languageData[i];
         }
         newLanguageData.push({ name: this.state.newLanguage, level: this.state.newLevel });
-        this.setState({ languageData: newLanguageData });
+        this.setState({
+            languageData: newLanguageData,
+            newLanguage: "",
+            newLevel: ""
+        });
 
         // update profile
         let data = Object.assign({}, {languages: newLanguageData})
@@ -117,7 +122,29 @@ export default class Language extends React.Component {
     }
 
     updateLanguage(){
-        console.log("Your Language was updated")
+        // save profile
+        let data = Object.assign({}, {languages: this.state.languageData})
+        data.languages[this.state.selectedIndex].name = this.state.selectedLanguage;
+        data.languages[this.state.selectedIndex].level = this.state.selectedLevel;
+        this.props.updateProfileData(data);
+        // update the language in local state
+        this.setState({
+            languageData: data.languages
+        })
+        this.closeEdit()
+    }
+
+    removeLanguage(index){
+        // save profile
+        let data = Object.assign({}, {languages: this.state.languageData});
+        data.languages.splice(index, 1);
+        this.props.updateProfileData(data);
+        // update the language in local state
+        this.setState({
+            languageData: data.languages
+        })
+        this.closeEdit()
+        console.log("Your Language was removed")
     }
 
     render() {
@@ -165,7 +192,7 @@ export default class Language extends React.Component {
                             <TableHeaderCell>Level</TableHeaderCell>
                             <TableHeaderCell>
                                 <button type="button" className="ui teal button" onClick={this.openNew}>
-                                    <Icon name="plus" color="white" />
+                                    <Icon name="plus" color="grey" />
                                     Add New
                                 </button>
                             </TableHeaderCell>
@@ -190,7 +217,7 @@ export default class Language extends React.Component {
                                 <Select name="selectedLevel" selectedOption={this.state.selectedLevel} placeholder="Language Level" options={levelOptions} controlFunc={this.handleChange} />
                             </TableCell>
                             <TableCell>
-                                <button type="button" className="ui blue basic button">
+                                <button type="button" className="ui blue basic button" onClick={this.updateLanguage}>
                                     Update
                                 </button>
                                 <button type="button" className="ui red basic button" onClick={this.closeEdit}>
@@ -206,7 +233,7 @@ export default class Language extends React.Component {
                                     <button type="button" className="ui icon button" onClick={() => this.openEdit(index)}>
                                         <Icon name="pencil alternate" />
                                     </button>
-                                    <button type="button" className="ui icon button" onClick={this.closeEdit}>
+                                    <button type="button" className="ui icon button" onClick={() => this.removeLanguage(index)}>
                                         <Icon name="close" />
                                     </button>
                                         

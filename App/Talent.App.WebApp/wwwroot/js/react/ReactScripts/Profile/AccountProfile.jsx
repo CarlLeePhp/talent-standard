@@ -169,6 +169,9 @@ export default class AccountProfile extends React.Component {
                                         <FormItemWrapper title="Languages" tooltip="Select languages that you speak">
                                             <Language languageData={this.state.profileData.languages} updateProfileData={this.updateAndSaveData} updateWithoutSave={this.updateWithoutSave} />
                                         </FormItemWrapper>
+                                        <FormItemWrapper title="Skills" tooltip="List your skills">
+                                            <Skill skillData={this.state.profileData.skills} updateProfileData={this.updateAndSaveData} />
+                                        </FormItemWrapper>
 
                                         <FormItemWrapper title="Visa Status" tooltip="What is your current Visa/Citizenship status?">
                                             <VisaStatus

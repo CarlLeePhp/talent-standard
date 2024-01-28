@@ -161,15 +161,7 @@ namespace Talent.Services.Profile.Controllers
         public async Task<ActionResult> UpdateLanguage([FromBody] AddLanguageViewModel language)
         {
             //Your code here;
-            if (ModelState.IsValid)
-            {
-                await _profileService.Updat(employer, _userAppContext.CurrentUserId, "employer"))
-                    {
-                        return Json(new { Success = true });
-                    }
-               
-            }
-            return Json(new { Success = false });
+            throw new NotImplementedException();
         }
 
         [HttpPost("deleteLanguage")]
