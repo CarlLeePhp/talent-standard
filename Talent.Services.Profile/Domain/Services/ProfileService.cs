@@ -195,6 +195,23 @@ namespace Talent.Services.Profile.Domain.Services
                     }
                     existingUser.Languages = newLanguages;
 
+                    // copy from above for experience
+                    List<UserExperience> newExperiences = new List<UserExperience>();
+                    foreach (var item in model.Experience)
+                    {
+                        UserExperience experiece = existingUser.Experience.SingleOrDefault(x => x.Id == item.Id);
+                        if(experiece == null)
+                        {
+                            experiece = new UserExperience
+                            {
+                                Id = ObjectId.GenerateNewId().ToString()
+                            };
+                        }
+                        UpdateExperienceFromView(item, experiece);
+                        newExperiences.Add(experiece);
+                    }
+                    existingUser.Experience = newExperiences;
+
                     await _userRepository.Update(existingUser);
 
                     return true;
@@ -471,6 +488,15 @@ namespace Talent.Services.Profile.Domain.Services
             original.UserId = model.CurrentUserId;
             original.Language = model.Name;
             original.LanguageLevel = model.Level;
+        }
+
+        protected void UpdateExperienceFromView(ExperienceViewModel model, UserExperience original)
+        {
+            original.Company = model.Company;
+            original.Position = model.Position;
+            original.Responsibilities = model.Responsibilities;
+            original.Start = model.Start;
+            original.End = model.End;
         }
 
         #endregion

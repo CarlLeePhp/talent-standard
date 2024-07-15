@@ -26,11 +26,14 @@ export class Address extends React.Component {
     componentWillReceiveProps(props) {
         if (props.addressData) {
             if (props.addressData.country !== "") {
-                let options = [];
-                this.state.countries[props.addressData.country].forEach((city) => {
-                    options.push({ value: city, title: city });
-                });
-                this.setState({ newAddress: props.addressData, cities: options });
+                if (this.state.countries[props.addressData.country]) {
+                    let options = [];
+                    this.state.countries[props.addressData.country].forEach((city) => {
+                        options.push({ value: city, title: city });
+                    });
+                    this.setState({ newAddress: props.addressData, cities: options });
+                }
+
             } else {
                 this.setState({ newAddress: props.addressData });
             }
