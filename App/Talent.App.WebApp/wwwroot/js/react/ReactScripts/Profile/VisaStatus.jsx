@@ -26,11 +26,27 @@ export default class VisaStatus extends React.Component {
         }
         if (props.visaExpiryDate !== "") {
             let d = new Date(props.visaExpiryDate);
-            let year = d.getFullYear();
-            let month = d.getMonth();
-            let day = d.getDate();
-            this.setState({ visaExpiryDate: year + "-" + month + "-" + day });
+            let expiryDate = this.formatDate(d);
+
+            this.setState({ visaExpiryDate: expiryDate });
         }
+    }
+
+    formatDate(d) {
+        let myYear = d.getFullYear();
+        let myMonth = d.getMonth() + 1;
+        let myDate = d.getDate();
+
+        if (myMonth < 10) {
+            myMonth = "0" + myMonth;
+        }
+
+        if (myDate < 10) {
+            myDate = "0" + myDate;
+        }
+
+        let result = myYear + "-" + myMonth + "-" + myDate;
+        return result;
     }
 
     handleChange(event) {
